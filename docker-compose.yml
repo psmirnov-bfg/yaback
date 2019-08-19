@@ -1,0 +1,34 @@
+version: '3'
+services:
+
+  postgresql:
+    image: postgres:9.6
+    hostname: postgresql
+    volumes:
+      - ./_data/pg:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+
+  migrator:
+    image: golang:1.11.0
+    volumes:
+      - ./_data/bin:/go/bin
+      - ./migrations:/migrations
+    command: echo "ok"
+    depends_on:
+      - postgresql
+
+  main:
+    image: local/yaback
+    restart : always
+    build: .
+    environment:
+      HOST: "0.0.0.0"
+      PORT: 8080
+      POSTGRESS_DBNAME: postgres
+      POSTGRESS_USER: postgres
+      POSTGRESS_PASS: postgres
+      POSTGRESS_HOST: postgresql
+      WAITDB: 300
+    ports:
+    - 8080:8080
