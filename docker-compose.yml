@@ -3,6 +3,7 @@ services:
 
   postgresql:
     image: postgres:9.6
+    restart : always
     hostname: postgresql
     volumes:
       - ./_data/pg:/var/lib/postgresql/data
