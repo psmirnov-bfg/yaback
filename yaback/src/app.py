@@ -39,7 +39,7 @@ def insert_import():
     transaction = db_conn.begin()
 
     try:
-        citizens.to_sql("citizens", db_conn, if_exists='append', index=False)
+        citizens.to_sql("citizens", db_conn, if_exists='append', index=False, chunksize=1000)
         relatives.to_sql("relatives", db_conn, if_exists='append', index=False)
     except Exception as e:
         transaction.rollback()
@@ -114,7 +114,24 @@ def get_import(import_id):
     citizens = pd.read_sql("SELECT * FROM citizens WHERE import_id = %d" % import_id, db_conn)
 
     if citizens.shape[0] > 0:
-        result =  json.dumps({"data":[utils.return_citizen(x[1].to_dict(), db_conn) for x in citizens.iterrows()]}, encoding='utf-8', ensure_ascii=False, indent = 2)
+
+        relatives = pd.read_sql("SELECT * FROM relatives WHERE import_id = %d" % import_id, db_conn)
+
+        rels = {}
+        for c_from, c_to in zip(relatives.citizen_from, relatives.citizen_to):
+            if c_from not in rels:
+                rels[c_from] = []
+            rels[c_from].append(c_to)
+
+        result = [utils.return_citizen(x[1].to_dict()) for x in citizens.iterrows()]
+        for idx in range(len(result)):
+            if result[idx]["citizen_id"] in rels:
+                result[idx]["relatives"] = rels[result[idx]["citizen_id"]]
+            else:
+                result[idx]["relatives"] = []
+
+        result = json.dumps({"data":result}, encoding='utf-8', ensure_ascii=False, indent = 2)
+
         db_conn.close()
         return result, 200
     else:

@@ -18,12 +18,21 @@ CREATE TABLE citizens (
     gender boolean
 );
 
+CREATE INDEX citizens_import_id_citizen_id_idx ON citizens(import_id int4_ops,citizen_id int4_ops);
+CREATE INDEX citizens_import_id_idx ON citizens(import_id int4_ops);
+
+
 CREATE TABLE relatives (
     id SERIAL PRIMARY KEY,
     citizen_from integer,
     citizen_to integer,
     import_id integer
 );
+
+CREATE INDEX relatives_import_id_citizen_to_idx ON relatives(import_id int4_ops,citizen_to int4_ops);
+CREATE INDEX relatives_import_id_citizen_from_idx ON relatives(import_id int4_ops,citizen_from int4_ops);
+CREATE INDEX relatives_import_id_idx ON relatives(import_id int4_ops);
+
 
 -- +goose Down
 

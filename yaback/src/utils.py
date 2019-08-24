@@ -136,7 +136,7 @@ def set_relatives(db, import_id, citizen_id, relatives):
         citizen_id
     ))
 
-    pd.concat([pd.DataFrame({
+    df = pd.concat([pd.DataFrame({
         "import_id" : import_id,
         "citizen_from" : citizen_id,
         "citizen_to" : relatives
@@ -144,4 +144,9 @@ def set_relatives(db, import_id, citizen_id, relatives):
         "import_id" : import_id,
         "citizen_from" : relatives,
         "citizen_to" : citizen_id
-    })]).to_sql("relatives", db, if_exists='append', index=False)
+    })])
+
+    # Fix inconsistency when somebody become relative to himself
+    df.drop_duplicates(["citizen_from", "citizen_to"], inplace=True)
+
+    df.to_sql("relatives", db, if_exists='append', index=False)

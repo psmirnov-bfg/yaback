@@ -27,7 +27,7 @@ def test_example():
                 "name": "Иванов Сергей Иванович",
                 "birth_date": "17.04.%d" % random.choice(range(1900,2018)),
                 "gender": "male",
-                "relatives": [1]
+                "relatives": [1,2]
             },
             {
                 "citizen_id": 3,
@@ -85,7 +85,7 @@ def test_example():
     assert (tmp.status_code == 200)
     tmp = tmp.json()["data"]
     assert (str(sorted([x for x in tmp if x["citizen_id"] == 1][0]["relatives"]) == '[2, 3]'))
-    assert (str(sorted([x for x in tmp if x["citizen_id"] == 2][0]["relatives"]) == '[1]'))
+    assert (str(sorted([x for x in tmp if x["citizen_id"] == 2][0]["relatives"]) == '[1, 2]'))
     assert (str(sorted([x for x in tmp if x["citizen_id"] == 3][0]["relatives"]) == '[1]'))
 
     tmp, _ = print_request("GET", "/imports/%d/citizens/birthdays" % resp.json()["data"]["import_id"])
@@ -95,10 +95,11 @@ def test_example():
     tmp = tmp.json()["data"]
 
     for idx in range(1,13):
-        if idx in [11,4]:
+        if idx == 11:
+            assert (len(tmp[str(idx)]) == 1)
             assert (tmp[str(idx)][0]["presents"] == 1)
             assert (tmp[str(idx)][0]["citizen_id"] == 1)
-        elif idx == 12:
+        elif idx in [12, 4]:
             assert (len(tmp[str(idx)]) == 2)
         else:
             assert (len(tmp[str(idx)]) == 0)
@@ -115,5 +116,5 @@ def test_example():
     tmp = tmp.json()["data"]
 
     assert (str(sorted([x for x in tmp if x["citizen_id"] == 1][0]["relatives"]) == '[2]'))
-    assert (str(sorted([x for x in tmp if x["citizen_id"] == 2][0]["relatives"]) == '[1]'))
+    assert (str(sorted([x for x in tmp if x["citizen_id"] == 2][0]["relatives"]) == '[1, 2]'))
     assert (str(sorted([x for x in tmp if x["citizen_id"] == 3][0]["relatives"]) == '[]'))
