@@ -21,6 +21,8 @@ services:
 
   main:
     image: local/yaback
+    volumes:
+      - ./_data/lock:/var/lock
     restart : always
     build: .
     environment:
