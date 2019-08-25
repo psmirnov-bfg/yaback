@@ -92,3 +92,19 @@ def test_bad():
         "name": 'newcitizen'
     })
     assert resp.status_code == 400
+
+    resp = requests.patch(URL + '/imports/%d/citizens/%d' % (import_id, 1), json={
+        "name": "newnamebutbadrelatives",
+        "relatives": ['cadabra']
+    })
+    assert resp.status_code == 400
+
+    resp = requests.get(URL + '/imports/%d/citizens' % import_id)
+    assert resp.status_code == 200
+
+    citizen = [x for x in resp.json()["data"] if x["citizen_id"] == 1][0]
+
+    print citizen
+
+    assert citizen["name"] != "newnamebutbadrelatives"
+
