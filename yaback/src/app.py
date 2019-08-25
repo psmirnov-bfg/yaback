@@ -98,6 +98,17 @@ def update_citizen(import_id, citizen_id):
             db_conn.execute(req, [x[1] for x in updates])
 
         if "relatives" in request.json:
+
+            if len(request.json["relatives"]) != len(set(request.json["relatives"])):
+                abort(400, "Duplicated relatives")
+
+            citizens = pd.read_sql("SELECT citizen_id FROM citizens WHERE import_id = %d" % import_id, db_conn)
+            citizens = set(citizens.citizen_id)
+
+            for r in request.json["relatives"]:
+                if r not in citizens:
+                    abort(400, "Trying to set not existent relative")
+
             utils.set_relatives(db_conn, import_id, citizen_id, request.json["relatives"])
             citizen_now = utils.return_citizen(citizen_now)
         else:

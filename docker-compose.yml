@@ -28,6 +28,7 @@ services:
     environment:
       HOST: "0.0.0.0"
       PORT: 8080
+      PROCESSES: 2
       POSTGRESS_DBNAME: postgres
       POSTGRESS_USER: postgres
       POSTGRESS_PASS: postgres

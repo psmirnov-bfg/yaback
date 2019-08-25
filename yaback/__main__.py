@@ -5,4 +5,5 @@ if __name__ == '__main__':
     app.run(debug=True,
             host=os.environ.get("HOST", ""),
             port=os.environ.get("PORT", ""),
+            processes=int(os.environ.get("PROCESSES", "")),
             threaded=True)

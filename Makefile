@@ -27,5 +27,6 @@ setup: run get_goose migrate test
 test:
 	@echo "Run tests..."
 	@docker-compose exec main pytest -s -q tests/example_test.py
+	@docker-compose exec main pytest -s -q tests/badrequest_test.py
 	@docker-compose exec main pytest -s -q tests/random_test.py
 	@echo "tests done"
